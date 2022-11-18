@@ -2,6 +2,7 @@ package functools
 
 import (
 	"reflect"
+	"sort"
 	"testing"
 )
 
@@ -29,6 +30,33 @@ func TestMapAsync(t *testing.T) {
 	if !reflect.DeepEqual(result, []int{2, 4, 6, 8, 10}) {
 		t.Fatal(result)
 	}
+}
+
+func TestMapChan(t *testing.T) {
+	double := func(x int) int {
+		return x * 2
+	}
+	input := []int{1, 2, 3, 4, 5}
+
+	resultCh := MapChan(double, input)
+
+	var results []int
+
+	for {
+		result, ok := <-resultCh
+		if !ok {
+			break
+		}
+		results = append(results, result)
+	}
+
+	// Result order is not guaranteed so sort here.
+	sort.Slice(results, func(i, j int) bool { return results[i] < results[j] })
+
+	if !reflect.DeepEqual(results, []int{2, 4, 6, 8, 10}) {
+		t.Fatal(results)
+	}
+
 }
 
 func TestFilter(t *testing.T) {
