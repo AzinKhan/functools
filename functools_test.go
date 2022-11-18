@@ -76,12 +76,38 @@ func TestReduce(t *testing.T) {
 	sum := func(a, b int) int {
 		return a + b
 	}
-	input := []int{1, 2, 3, 4, 5}
 
-	result := Reduce(sum, input)
+	testcases := []struct {
+		name     string
+		input    []int
+		expected int
+	}{
+		{
+			name:     "Sums correctly",
+			input:    []int{6, 2, 3, 4, 5},
+			expected: 20,
+		},
+		{
+			name:     "Single element",
+			input:    []int{4},
+			expected: 4,
+		},
+		{
+			name:     "Empty slice",
+			input:    []int{},
+			expected: 0,
+		},
+	}
 
-	if result != 15 {
-		t.Fatal(result)
+	for _, tc := range testcases {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			result := Reduce(sum, tc.input)
+			if result != tc.expected {
+				t.Fatal(result)
+			}
+		})
 	}
 
 }

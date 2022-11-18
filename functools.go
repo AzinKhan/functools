@@ -80,7 +80,8 @@ func Reduce[A any](fn func(A, A) A, as []A) A {
 	if len(as) == 0 {
 		return result
 	}
-	for _, a := range as {
+	result = as[0]
+	for _, a := range as[1:] {
 		result = fn(result, a)
 	}
 	return result
