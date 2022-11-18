@@ -12,7 +12,8 @@ func Map[A any, B any](fn func(A) B, as []A)  []B{
 }
 
 // MapAsync applies the given function to each element in the provided slice in
-// parallel, with each element mapped in a separate goroutine.
+// parallel, with each element mapped in a separate goroutine. The ordering of
+// the input slice is maintained in the output.
 func MapAsync[A any, B any](fn func(A) B, as []A) []B{
 	n := len(as)
 	results := make([]B, n)
@@ -61,7 +62,9 @@ func MapChan[A any, B any](fn func(A) B, as []A) <-chan B {
 }
 
 // Filter returns the provided slice with any elements not satisfying fn
-// removed. The resulting slice can be smaller than the input slice.
+// removed. The resulting slice can be smaller than the input slice. A new
+// slice is created for the purposes of this function, the original slice is
+// not modified.
 func Filter[A any](fn func(A) bool, as []A) []A {
 	results := make([]A, 0, len(as))
 
@@ -74,7 +77,8 @@ func Filter[A any](fn func(A) bool, as []A) []A {
 	return results
 }
 
-// Reduce applies fn to the given slice's elements cumulatively.
+// Reduce applies fn to the given slice's elements cumulatively. If an empty
+// list is passed, then the zero-value of the type A is returned.
 func Reduce[A any](fn func(A, A) A, as []A) A {
 	var result A
 	if len(as) == 0 {
