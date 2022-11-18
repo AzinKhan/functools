@@ -159,3 +159,36 @@ func TestUnbufferChannel(t *testing.T) {
 		t.Fatal(result)
 	}
 }
+
+func TestFindFirst(t *testing.T) {
+	testcases := []struct {
+		name        string
+		condition   func(int) bool
+		input       []int
+		expectedIdx int
+	}{
+		{
+			name:        "Finds 5",
+			condition:   func(i int) bool { return i == 5 },
+			input:       []int{1, 2, 3, 4, 5, 6},
+			expectedIdx: 4,
+		},
+		{
+			name:        "Not found",
+			condition:   func(i int) bool { return i == 100 },
+			input:       []int{1, 2, 3, 4, 5, 6},
+			expectedIdx: -1,
+		},
+	}
+
+	for _, tc := range testcases {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			idx := FindFirst(tc.condition, tc.input)
+			if idx != tc.expectedIdx {
+				t.Fatal(idx)
+			}
+		})
+	}
+}

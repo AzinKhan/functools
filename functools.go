@@ -133,3 +133,15 @@ func UnbufferChannel[A any](ch <- chan A) []A {
 	}
 	return result
 }
+
+
+// FindFirst returns the index of the first element that matches the condition If no
+// elements match the condition then a sentinel value of -1 is returned.
+func FindFirst[A any](condition func(A) bool, as []A) int{
+	for i, a := range as {
+		if condition(a) {
+			return  i
+		}
+	}
+	return  -1
+}
