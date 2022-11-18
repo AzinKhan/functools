@@ -56,7 +56,25 @@ func TestMapChan(t *testing.T) {
 	if !reflect.DeepEqual(results, []int{2, 4, 6, 8, 10}) {
 		t.Fatal(results)
 	}
+}
 
+func TestMapLazy(t *testing.T) {
+	double := func(x int) int {
+		return x * 2
+	}
+	input := []int{1, 2, 3, 4, 5}
+	inputCh := BufferChannel(input)
+
+	resultCh := MapLazy(double, inputCh)
+
+	var results []int
+	for result := range resultCh {
+		results = append(results, result)
+	}
+
+	if !reflect.DeepEqual(results, []int{2, 4, 6, 8, 10}) {
+		t.Fatal(results)
+	}
 }
 
 func TestFilter(t *testing.T) {

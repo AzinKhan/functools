@@ -61,6 +61,28 @@ func MapChan[A any, B any](fn func(A) B, as []A) <-chan B {
 	return results
 }
 
+// MapLazy maps the given function over the elements received on the channel
+// `as`. The results are written to the returned channel. The caller is assumed
+// to control the closing of the input channel. Once that is closed, the
+// returned results channel is also closed. The returned results channel is not
+// buffered.
+func MapLazy[A any, B any](fn func(A) B, inCh <- chan A) <-chan B {
+	results := make(chan B)
+	go func() {
+		for {
+			a, ok := <- inCh
+			if !ok {
+				close(results)
+				return
+			}
+			results <- fn(a)
+		}
+	}()
+
+	return results
+}
+
+
 // Filter returns the provided slice with any elements not satisfying fn
 // removed. The resulting slice can be smaller than the input slice. A new
 // slice is created for the purposes of this function, the original slice is
