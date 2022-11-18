@@ -129,3 +129,33 @@ func TestReduce(t *testing.T) {
 	}
 
 }
+
+func TestBufferChannel(t *testing.T) {
+	input := []int{1, 2, 3, 4, 5, 6}
+
+	n := 0
+	for e := range BufferChannel(input) {
+		if e != input[n] {
+			t.Fatal(e)
+		}
+		n++
+	}
+}
+
+func TestUnbufferChannel(t *testing.T) {
+	input := []int{1, 2, 3, 4, 5, 6}
+	ch := make(chan int)
+
+	go func() {
+		for _, i := range input {
+			ch <- i
+		}
+		close(ch)
+	}()
+
+	result := UnbufferChannel(ch)
+
+	if !reflect.DeepEqual(input, result) {
+		t.Fatal(result)
+	}
+}

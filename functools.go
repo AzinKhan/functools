@@ -112,3 +112,24 @@ func Reduce[A any](fn func(A, A) A, as []A) A {
 	}
 	return result
 }
+
+// BufferChannel takes a slice and returns a buffered, closed, channel of the
+// elements therein.
+func BufferChannel[A any](as []A) <- chan A {
+	ch := make(chan A, len(as))
+	for _, a := range as {
+		ch <- a
+	}
+	close(ch)
+	return ch
+}
+
+// UnbufferChannel reads elements that come through the given channel and puts
+// them into a slice. It blocks until the channel is closed.
+func UnbufferChannel[A any](ch <- chan A) []A {
+	var result []A
+	for a := range ch {
+		result = append(result, a)
+	}
+	return result
+}
