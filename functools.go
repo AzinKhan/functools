@@ -3,7 +3,7 @@ package functools
 import "sync"
 
 // Map applies the given function to every element in the provided slice.
-func Map[A any, B any](fn func(A) B, as []A)  []B{
+func Map[A any, B any](fn func(A) B, as []A) []B {
 	results := make([]B, len(as))
 	for i, a := range as {
 		results[i] = fn(a)
@@ -14,7 +14,7 @@ func Map[A any, B any](fn func(A) B, as []A)  []B{
 // MapAsync applies the given function to each element in the provided slice in
 // parallel, with each element mapped in a separate goroutine. The ordering of
 // the input slice is maintained in the output.
-func MapAsync[A any, B any](fn func(A) B, as []A) []B{
+func MapAsync[A any, B any](fn func(A) B, as []A) []B {
 	n := len(as)
 	results := make([]B, n)
 
@@ -66,11 +66,11 @@ func MapChan[A any, B any](fn func(A) B, as []A) <-chan B {
 // to control the closing of the input channel. Once that is closed, the
 // returned results channel is also closed. The returned results channel is not
 // buffered.
-func MapLazy[A any, B any](fn func(A) B, inCh <- chan A) <-chan B {
+func MapLazy[A any, B any](fn func(A) B, inCh <-chan A) <-chan B {
 	results := make(chan B)
 	go func() {
 		for {
-			a, ok := <- inCh
+			a, ok := <-inCh
 			if !ok {
 				close(results)
 				return
@@ -81,7 +81,6 @@ func MapLazy[A any, B any](fn func(A) B, inCh <- chan A) <-chan B {
 
 	return results
 }
-
 
 // Filter returns the provided slice with any elements not satisfying fn
 // removed. The resulting slice can be smaller than the input slice. A new
@@ -115,7 +114,7 @@ func Reduce[A any](fn func(A, A) A, as []A) A {
 
 // BufferChannel takes a slice and returns a buffered, closed, channel of the
 // elements therein.
-func BufferChannel[A any](as []A) <- chan A {
+func BufferChannel[A any](as []A) <-chan A {
 	ch := make(chan A, len(as))
 	for _, a := range as {
 		ch <- a
@@ -126,7 +125,7 @@ func BufferChannel[A any](as []A) <- chan A {
 
 // UnbufferChannel reads elements that come through the given channel and puts
 // them into a slice. It blocks until the channel is closed.
-func UnbufferChannel[A any](ch <- chan A) []A {
+func UnbufferChannel[A any](ch <-chan A) []A {
 	var result []A
 	for a := range ch {
 		result = append(result, a)
@@ -134,14 +133,13 @@ func UnbufferChannel[A any](ch <- chan A) []A {
 	return result
 }
 
-
 // FindFirst returns the index of the first element that matches the condition If no
 // elements match the condition then a sentinel value of -1 is returned.
-func FindFirst[A any](condition func(A) bool, as []A) int{
+func FindFirst[A any](condition func(A) bool, as []A) int {
 	for i, a := range as {
 		if condition(a) {
-			return  i
+			return i
 		}
 	}
-	return  -1
+	return -1
 }
